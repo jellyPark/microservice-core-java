@@ -1,13 +1,5 @@
 package com.lush.microservice.core.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.lush.microservice.core.enums.ResponseStatusType;
-import com.lush.microservice.core.models.Endpoint;
-import com.lush.microservice.core.models.Response;
-import com.lush.microservice.core.models.ServiceInfo;
-import com.lush.microservice.core.utils.Utils;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -16,12 +8,18 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.lush.microservice.core.enums.HttpMethodType;
+import com.lush.microservice.core.enums.ResponseStatusType;
+import com.lush.microservice.core.models.Response;
+import com.lush.microservice.core.models.ServiceInfo;
 
 /**
  * ActuatorController
@@ -76,17 +74,11 @@ public class CoreController {
   private String serviceVersion;
 
   /**
-   * Define InetAddress for get host name.
-   * The hostname can be imported as a HttpServletRequest object,
-   * but an issue occurs in the docker collector container that recognizes the hostname as ' java_http'.
+   * Define InetAddress for get host name. The hostname can be imported as a HttpServletRequest
+   * object, but an issue occurs in the docker collector container that recognizes the hostname as '
+   * java_http'.
    */
   private InetAddress ip;
-
-  /**
-   * Define utils.
-   */
-  @Autowired
-  private Utils utils;
 
   /**
    * Set to RestTemplate Bean.
@@ -104,7 +96,8 @@ public class CoreController {
    */
   public String setUri(String context) throws UnknownHostException {
     ip = InetAddress.getLocalHost();
-    return request.getScheme() + "://" + ip.getHostName() + ":" + request.getServerPort() + "/" + context;
+    return request.getScheme() + "://" + ip.getHostName() + ":" + request.getServerPort() + "/"
+        + context;
   }
 
   /**
@@ -125,8 +118,7 @@ public class CoreController {
 
     // Check status of application.
     if (!"UP".equals(appStatus)) {
-      response.setStatus(ResponseStatusType.FAIL.getStatus());
-      response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+      response.setStatus(ResponseStatusType.FAIL);
       response.setMessage("AppStatus is fail");
     }
 
@@ -137,9 +129,13 @@ public class CoreController {
       String dbStatus = temp.get("status").getAsString();
 
       if (!"UP".equals(dbStatus)) {
-        response.setStatus(ResponseStatusType.FAIL.getStatus());
-        response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.setMessage("Database status is fail");
+        response.setStatus(ResponseStatusType.FAIL);
+
+        if (!"".equals(response.getMessage())) {
+          response.setMessage(response.getMessage() + " and database status is fail");
+        } else {
+          response.setMessage("Redis status is fail");
+        }
       }
     }
 
@@ -150,9 +146,13 @@ public class CoreController {
       String redisStatus = temp.get("status").getAsString();
 
       if (!"UP".equals(redisStatus)) {
-        response.setStatus(ResponseStatusType.FAIL.getStatus());
-        response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.setMessage("Redis status is fail");
+        response.setStatus(ResponseStatusType.FAIL);
+
+        if (!"".equals(response.getMessage())) {
+          response.setMessage(response.getMessage() + " and redis status is fail");
+        } else {
+          response.setMessage("Redis status is fail");
+        }
       }
     }
 
@@ -179,18 +179,19 @@ public class CoreController {
     String method = "";
     String pattern = "";
     String regex = "[\"\\[\\]]";
-    List<Endpoint> endpoints = new ArrayList<>();
+    List<ServiceInfo.Endpoint> endpoints = new ArrayList<>();
 
-    for (int idx=0; idx < methods.size(); idx++) {
+    for (int idx = 0; idx < methods.size(); idx++) {
       method = methods.get(idx).toString().replaceAll(regex, "");
       pattern = patterns.get(idx).toString().replaceAll(regex, "");
 
-      if (method.length() == 0 || pattern.length() == 0 || "/health".equals(pattern) || "/mappings".equals(pattern)) {
+      if (method.length() == 0 || pattern.length() == 0 || "/health".equals(pattern)
+          || "/mappings".equals(pattern)) {
         continue;
       }
 
-      Endpoint endpoint = new Endpoint();
-      endpoint.setMethod(HttpMethod.valueOf(method));
+      ServiceInfo.Endpoint endpoint = new ServiceInfo.Endpoint();
+      endpoint.setMethod(HttpMethodType.valueOf(method));
       endpoint.setUri(pattern);
       endpoints.add(endpoint);
     }
@@ -203,6 +204,6 @@ public class CoreController {
     serviceInfo.setService_version(serviceVersion);
     serviceInfo.setEndpoints(endpoints);
 
-    return new ResponseEntity(serviceInfo, utils.getResponseHeaders(), HttpStatus.OK);
+    return new ResponseEntity(serviceInfo, HttpStatus.OK);
   }
 }

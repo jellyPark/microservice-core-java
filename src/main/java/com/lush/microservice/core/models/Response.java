@@ -1,9 +1,7 @@
 package com.lush.microservice.core.models;
 
-import com.lush.microservice.core.enums.ResponseStatusType;
-import com.lush.microservice.core.enums.ResponseStatusType;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import com.lush.microservice.core.enums.ResponseStatusType;
 
 /**
  * Response
@@ -19,12 +17,7 @@ public class Response {
   /**
    * Response status.
    */
-  private String status;
-
-  /**
-   * Response code.
-   */
-  private Integer code;
+  private ResponseStatusType status;
 
   /**
    * Response message.
@@ -37,58 +30,44 @@ public class Response {
   private Object data;
 
   /**
-   * Default constructor.
+   * Description : Default constructor.
    */
-  public Response () {
-    this.status = ResponseStatusType.OK.getStatus();
-    this.code = HttpStatus.OK.value();
-    this.message = "success";
+  public Response() {
+    this.status = ResponseStatusType.OK;
+    this.message = "";
     this.data = "";
   }
 
   /**
-   * Constructor.
+   * Description : Constructor.
    *
    * @param status
-   * @param code
-   * @param message
    */
-  public Response(String status, Integer code, String message) {
+  public Response(ResponseStatusType status) {
     this.status = status;
-    this.code = code;
-    this.message = message;
+    this.message = "";
     this.data = "";
   }
 
   /**
-   * Constructor.
+   * Description : Constructor.
    *
    * @param status
-   * @param code
    * @param message
-   * @param data
    */
-  public Response(String status, Integer code, String message, Object data) {
+  public Response(ResponseStatusType status, String message) {
     this.status = status;
-    this.code = code;
     this.message = message;
-    this.data = data;
+    this.data = "";
   }
 
-  public String getStatus() {
+  // Getter and Setter
+  public ResponseStatusType getStatus() {
     return status;
   }
 
-  public void setStatus(String status) {
+  public void setStatus(ResponseStatusType status) {
     this.status = status;
-  }
-
-  public Integer getCode() {
-    return code;
-  }
-
-  public void setCode(Integer code) {
-    this.code = code;
   }
 
   public String getMessage() {

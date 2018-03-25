@@ -1,5 +1,6 @@
 package com.lush.microservice.core.exceptions;
 
+import com.lush.microservice.core.enums.ResponseStatusType;
 import com.lush.microservice.core.models.Response;
 
 /**
@@ -22,8 +23,7 @@ public class CoreException extends RuntimeException {
    */
   public CoreException(ExceptionType exceptionType) {
     Response response = new Response();
-    response.setStatus("fail");
-    response.setCode(exceptionType.getCode());
+    response.setStatus(ResponseStatusType.FAIL);
     response.setMessage(exceptionType.getMassage());
     response.setData(null);
     ExceptionRespose(response);
@@ -37,8 +37,7 @@ public class CoreException extends RuntimeException {
    */
   public CoreException(int code, String handlerMessage) {
     Response response = new Response();
-    response.setStatus("fail");
-    response.setCode(code);
+    response.setStatus(ResponseStatusType.FAIL);
     response.setMessage(handlerMessage);
     response.setData(null);
 

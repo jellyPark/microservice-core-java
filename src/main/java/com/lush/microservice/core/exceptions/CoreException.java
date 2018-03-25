@@ -8,6 +8,7 @@ import com.lush.microservice.core.enums.ResponseStatusType;
  * Core Exception(Common)
  * 
  * @author Jelly
+ * @author IS
  *
  */
 @Component

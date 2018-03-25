@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -218,7 +217,6 @@ public class CoreController {
    * @return Response
    */
   @ExceptionHandler(CoreException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public Response handlerCoreException(CoreException e) {
     Response response = new Response();
     response.setStatus(e.getStatus());

@@ -11,7 +11,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -19,7 +18,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.lush.microservice.core.enums.ResponseStatusType;
-import com.lush.microservice.core.exceptions.CoreException;
 import com.lush.microservice.core.models.Endpoint;
 import com.lush.microservice.core.models.Response;
 import com.lush.microservice.core.models.ServiceInfo;
@@ -210,18 +208,4 @@ public class CoreController {
     return new ResponseEntity(serviceInfo, utils.getResponseHeaders(), HttpStatus.OK);
   }
 
-  /**
-   * handlerCoreException : Core Exception Handler
-   *
-   * @param e
-   * @return Response
-   */
-  @ExceptionHandler(CoreException.class)
-  public Response handlerCoreException(CoreException e) {
-    Response response = new Response();
-    response.setStatus(e.getStatus());
-    response.setCode(e.getCode());
-    response.setMessage(e.getMessage());
-    return response;
-  }
 }

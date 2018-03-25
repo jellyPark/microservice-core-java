@@ -1,5 +1,6 @@
 package com.lush.microservice.core.exceptions;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import com.lush.microservice.core.enums.ResponseStatusType;
 
@@ -20,12 +21,17 @@ public class CoreException extends RuntimeException {
   /**
    * Exceptoin status
    */
-  private ResponseStatusType status;
+  private final String status;
+
+  /**
+   * Exceptoin code
+   */
+  private final Integer code;
 
   /**
    * Exceptoin message
    */
-  private String message;
+  private final String message;
 
   /**
    * The default creator. (using default code and message)
@@ -33,7 +39,8 @@ public class CoreException extends RuntimeException {
    * @param exceptionType
    */
   public CoreException(ExceptionType exceptionType) {
-    this.status = ResponseStatusType.FAIL;
+    this.status = ResponseStatusType.FAIL.getStatus();
+    this.code = HttpStatus.INTERNAL_SERVER_ERROR.value();
     this.message = exceptionType.getMassage();
   }
 
@@ -43,26 +50,22 @@ public class CoreException extends RuntimeException {
    * @param code
    * @param handlerMessage
    */
-  public CoreException(int code, String handlerMessage) {
-    this.status = ResponseStatusType.FAIL;
+  public CoreException(Integer code, String handlerMessage) {
+    this.status = ResponseStatusType.FAIL.getStatus();
+    this.code = HttpStatus.INTERNAL_SERVER_ERROR.value();
     this.message = handlerMessage;
   }
 
-  public ResponseStatusType getStatus() {
+  public String getStatus() {
     return status;
   }
 
-  public void setStatus(ResponseStatusType status) {
-    this.status = status;
+  public Integer getCode() {
+    return code;
   }
 
   @Override
   public String getMessage() {
     return message;
   }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
 }

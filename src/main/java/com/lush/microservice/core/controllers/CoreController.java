@@ -1,13 +1,5 @@
 package com.lush.microservice.core.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.lush.microservice.core.enums.ResponseStatusType;
-import com.lush.microservice.core.models.Endpoint;
-import com.lush.microservice.core.models.Response;
-import com.lush.microservice.core.models.ServiceInfo;
-import com.lush.microservice.core.utils.Utils;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -19,9 +11,20 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.lush.microservice.core.enums.ResponseStatusType;
+import com.lush.microservice.core.exceptions.CoreException;
+import com.lush.microservice.core.models.Endpoint;
+import com.lush.microservice.core.models.Response;
+import com.lush.microservice.core.models.ServiceInfo;
+import com.lush.microservice.core.utils.Utils;
 
 /**
  * ActuatorController
@@ -76,9 +79,9 @@ public class CoreController {
   private String serviceVersion;
 
   /**
-   * Define InetAddress for get host name.
-   * The hostname can be imported as a HttpServletRequest object,
-   * but an issue occurs in the docker collector container that recognizes the hostname as ' java_http'.
+   * Define InetAddress for get host name. The hostname can be imported as a HttpServletRequest
+   * object, but an issue occurs in the docker collector container that recognizes the hostname as '
+   * java_http'.
    */
   private InetAddress ip;
 
@@ -104,7 +107,8 @@ public class CoreController {
    */
   public String setUri(String context) throws UnknownHostException {
     ip = InetAddress.getLocalHost();
-    return request.getScheme() + "://" + ip.getHostName() + ":" + request.getServerPort() + "/" + context;
+    return request.getScheme() + "://" + ip.getHostName() + ":" + request.getServerPort() + "/"
+        + context;
   }
 
   /**
@@ -181,11 +185,12 @@ public class CoreController {
     String regex = "[\"\\[\\]]";
     List<Endpoint> endpoints = new ArrayList<>();
 
-    for (int idx=0; idx < methods.size(); idx++) {
+    for (int idx = 0; idx < methods.size(); idx++) {
       method = methods.get(idx).toString().replaceAll(regex, "");
       pattern = patterns.get(idx).toString().replaceAll(regex, "");
 
-      if (method.length() == 0 || pattern.length() == 0 || "/health".equals(pattern) || "/mappings".equals(pattern)) {
+      if (method.length() == 0 || pattern.length() == 0 || "/health".equals(pattern)
+          || "/mappings".equals(pattern)) {
         continue;
       }
 
@@ -204,5 +209,21 @@ public class CoreController {
     serviceInfo.setEndpoints(endpoints);
 
     return new ResponseEntity(serviceInfo, utils.getResponseHeaders(), HttpStatus.OK);
+  }
+
+  /**
+   * handlerCoreException : Core Exception Handler
+   *
+   * @param e
+   * @return Response
+   */
+  @ExceptionHandler(CoreException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public Response handlerCoreException(CoreException e) {
+    Response response = new Response();
+    response.setStatus(e.getStatus());
+    response.setCode(e.getCode());
+    response.setMessage(e.getMessage());
+    return response;
   }
 }

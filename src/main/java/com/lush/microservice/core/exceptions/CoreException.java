@@ -2,6 +2,7 @@ package com.lush.microservice.core.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import com.lush.microservice.core.enums.ExceptionType;
 import com.lush.microservice.core.enums.ResponseStatusType;
 
 /**
@@ -22,27 +23,27 @@ public class CoreException extends RuntimeException {
   /**
    * Exceptoin status
    */
-  private final String status;
+  private String status;
 
   /**
    * Exceptoin code
    */
-  private final Integer code;
+  private Integer code;
 
   /**
    * Exceptoin message
    */
-  private final String message;
+  private String message;
 
   /**
    * The default creator. (using default code and message)
    * 
    * @param exceptionType
    */
-  public CoreException(ExceptionType exceptionType) {
+  public CoreException() {
     this.status = ResponseStatusType.FAIL.getStatus();
     this.code = HttpStatus.INTERNAL_SERVER_ERROR.value();
-    this.message = exceptionType.getMassage();
+    this.message = "Internal server exception";
   }
 
   /**
@@ -57,6 +58,17 @@ public class CoreException extends RuntimeException {
     this.message = handlerMessage;
   }
 
+  /**
+   * set Default exception message
+   * 
+   * @param exceptionType
+   */
+  public void CommonExceptoin(ExceptionType exceptionType) {
+    this.status = ResponseStatusType.FAIL.getStatus();
+    this.code = exceptionType.getCode();
+    this.message = exceptionType.getMassage();
+  }
+
   public String getStatus() {
     return status;
   }
@@ -69,4 +81,5 @@ public class CoreException extends RuntimeException {
   public String getMessage() {
     return message;
   }
+
 }

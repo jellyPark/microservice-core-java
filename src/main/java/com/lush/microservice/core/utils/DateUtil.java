@@ -30,7 +30,6 @@ public class DateUtil {
   // get now local date
   public LocalDate getNowDate() {
     LocalDate nowDate = LocalDate.now();
-    System.out.println("nowDate : " + nowDate);
     return nowDate;
   }
 
@@ -45,7 +44,5 @@ public class DateUtil {
     LocalTime nowOnlyNowTime = LocalTime.now();
     return nowOnlyNowTime;
   }
-
-  // get date format local
 
 }

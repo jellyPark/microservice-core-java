@@ -63,10 +63,10 @@ public class CoreException extends RuntimeException {
    * 
    * @param exceptionType
    */
-  public void setCommonExceptoin(ExceptionType exceptionType) {
-    this.status = ResponseStatusType.FAIL.getStatus();
-    this.code = exceptionType.getCode();
-    this.message = exceptionType.getMassage();
+  public CoreException setCommonExceptoin(ExceptionType exceptionType) {
+    CoreException coreException =
+        new CoreException(exceptionType.getCode(), exceptionType.getMassage());
+    return coreException;
   }
 
   public String getStatus() {

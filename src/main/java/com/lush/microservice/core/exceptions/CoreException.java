@@ -54,7 +54,7 @@ public class CoreException extends RuntimeException {
    */
   public CoreException(Integer code, String handlerMessage) {
     this.status = ResponseStatusType.FAIL.getStatus();
-    this.code = HttpStatus.INTERNAL_SERVER_ERROR.value();
+    this.code = code;
     this.message = handlerMessage;
   }
 

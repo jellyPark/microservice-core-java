@@ -2,10 +2,10 @@ package com.lush.microservice.core.enums;
 
 /**
  * Exception Handler
- * 
+ * Manage exception messages in common.
+ *
  * @author Jelly
  * @author Is
- *
  */
 public enum ExceptionType {
 
@@ -23,7 +23,7 @@ public enum ExceptionType {
    * Don't allow File type Exception
    */
   FILE_TYPE_EXCEPTION(415, "don't allow File type"),
-  
+
   /**
    * File upload Failed Exception
    */
@@ -32,7 +32,7 @@ public enum ExceptionType {
   /**
    * Exception Code
    */
-  private final Integer code;
+  private final int code;
 
   /**
    * Exception Message
@@ -41,19 +41,25 @@ public enum ExceptionType {
 
   /**
    * Default creator
-   * 
+   *
    * @param code
    * @param massage
    */
-  ExceptionType(Integer code, String massage) {
+  ExceptionType(int code, String massage) {
     this.code = code;
     this.massage = massage;
   }
 
-  public Integer getCode() {
+  /**
+   * Get Exception code
+   */
+  public int getCode() {
     return code;
   }
 
+  /**
+   * Get Exception message
+   */
   public String getMassage() {
     return massage;
   }

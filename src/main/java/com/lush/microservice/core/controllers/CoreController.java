@@ -1,5 +1,14 @@
 package com.lush.microservice.core.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.lush.microservice.core.enums.ResponseStatusType;
+import com.lush.microservice.core.exceptions.CoreException;
+import com.lush.microservice.core.models.Endpoint;
+import com.lush.microservice.core.models.Response;
+import com.lush.microservice.core.models.ServiceInfo;
+import com.lush.microservice.core.utils.HttpUtil;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -11,17 +20,10 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.lush.microservice.core.enums.ResponseStatusType;
-import com.lush.microservice.core.models.Endpoint;
-import com.lush.microservice.core.models.Response;
-import com.lush.microservice.core.models.ServiceInfo;
-import com.lush.microservice.core.utils.Utils;
 
 /**
  * ActuatorController
@@ -76,8 +78,9 @@ public class CoreController {
   private String serviceVersion;
 
   /**
-   * Define InetAddress for get host name. The hostname can be imported as a HttpServletRequest
-   * object, but an issue occurs in the docker collector container that recognizes the hostname as '
+   * Define InetAddress for get host name.
+   * The hostname can be imported as a HttpServletRequest object,
+   * but an issue occurs in the docker collector container that recognizes the hostname as '
    * java_http'.
    */
   private InetAddress ip;
@@ -86,7 +89,7 @@ public class CoreController {
    * Define utils.
    */
   @Autowired
-  private Utils utils;
+  private HttpUtil httpUtil;
 
   /**
    * Set to RestTemplate Bean.
@@ -126,7 +129,7 @@ public class CoreController {
 
     // Check status of application.
     if (!"UP".equals(appStatus)) {
-      response.setStatus(ResponseStatusType.FAIL.getStatus());
+      response.setStatus(ResponseStatusType.FAIL);
       response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
       response.setMessage("AppStatus is fail");
     }
@@ -138,7 +141,7 @@ public class CoreController {
       String dbStatus = temp.get("status").getAsString();
 
       if (!"UP".equals(dbStatus)) {
-        response.setStatus(ResponseStatusType.FAIL.getStatus());
+        response.setStatus(ResponseStatusType.FAIL);
         response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setMessage("Database status is fail");
       }
@@ -151,7 +154,7 @@ public class CoreController {
       String redisStatus = temp.get("status").getAsString();
 
       if (!"UP".equals(redisStatus)) {
-        response.setStatus(ResponseStatusType.FAIL.getStatus());
+        response.setStatus(ResponseStatusType.FAIL);
         response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setMessage("Redis status is fail");
       }
@@ -186,8 +189,8 @@ public class CoreController {
       method = methods.get(idx).toString().replaceAll(regex, "");
       pattern = patterns.get(idx).toString().replaceAll(regex, "");
 
-      if (method.length() == 0 || pattern.length() == 0 || "/health".equals(pattern)
-          || "/mappings".equals(pattern)) {
+      if (method.length() == 0 || pattern.length() == 0 || "/health".equals(pattern) || "/mappings"
+          .equals(pattern)) {
         continue;
       }
 
@@ -205,7 +208,21 @@ public class CoreController {
     serviceInfo.setService_version(serviceVersion);
     serviceInfo.setEndpoints(endpoints);
 
-    return new ResponseEntity(serviceInfo, utils.getResponseHeaders(), HttpStatus.OK);
+    return new ResponseEntity(serviceInfo, httpUtil.getResponseHeaders(), HttpStatus.OK);
   }
 
+  /**
+   * Method name : handlerCoreException.
+   * Description : Core Exception Handler.
+   *
+   * @return Response
+   */
+  @ExceptionHandler(CoreException.class)
+  public Response handlerCoreException(CoreException e) {
+    Response response = new Response();
+    response.setStatus(e.getStatus());
+    response.setCode(e.getCode());
+    response.setMessage(e.getMessage());
+    return response;
+  }
 }

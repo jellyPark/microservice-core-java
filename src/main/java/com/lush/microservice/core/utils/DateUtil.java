@@ -7,42 +7,53 @@ import org.springframework.stereotype.Component;
 
 /**
  * Date Format Util
- * 
+ *
  * @author Jelly
- * @author IS
+ * @author Is
  *
  */
 @Component
 public class DateUtil {
 
-  // get now local year
-  public int getNowYear() {
-    int nowYear = LocalDate.now().getYear();
-    return nowYear;
+  /**
+   * Get Now local year(only year)
+   */
+  public Integer getNowYear() {
+    return LocalDate.now().getYear();
   }
 
-  // get now local month
-  public int getNowMonth() {
-    int nowMonth = LocalDate.now().getMonthValue();
-    return nowMonth;
+  /**
+   * Get Now local month(only month)
+   */
+  public Integer getNowMonth() {
+    return LocalDate.now().getMonthValue();
   }
 
-  // get now local date
+  /**
+   * Get Now local date(only date)
+   */
   public LocalDate getNowDate() {
-    LocalDate nowDate = LocalDate.now();
-    return nowDate;
+    return LocalDate.now();
   }
 
-  // get now local time
+  /**
+   * Get Now local time(year, monthm, date, time)
+   */
   public LocalDateTime getNowTime() {
-    LocalDateTime nowTime = LocalDateTime.now();
-    return nowTime;
+    return LocalDateTime.now();
   }
 
-  // get now time only
+  /**;
+   * Get Now local time only(only time)
+   */
   public LocalTime getOnlyNowTime() {
-    LocalTime nowOnlyNowTime = LocalTime.now();
-    return nowOnlyNowTime;
+    return LocalTime.now();
   }
 
+  /**
+   * Get Now local time without nanosecond.
+   */
+  public LocalDateTime getDateTimeWithoutNanosec() {
+    return LocalDateTime.now().withNano(0);
+  }
 }
